@@ -1,4 +1,4 @@
-enum WeatherIcon {
+pub enum WeatherIcon {
     Sunny,
     PartlyCloudy,
     Cloudy,
@@ -9,7 +9,7 @@ enum WeatherIcon {
 }
 
 impl WeatherIcon {
-    fn glyph(&self) -> &'static str {
+    pub fn glyph(&self) -> &'static str {
         match self {
             WeatherIcon::Sunny => "☀",
             WeatherIcon::PartlyCloudy => "⛅",
@@ -23,17 +23,17 @@ impl WeatherIcon {
 }
 
 #[derive(Default, PartialEq, Eq)]
-enum RunningState {
+pub enum RunningState {
     #[default]
     Running,
     Done,
 }
 
 pub struct Model {
-    icon: WeatherIcon,
-    high: i32, // e.g. 20.2°C stored as 202
-    low: i32,
-    running_state: RunningState,
+    pub icon: WeatherIcon,
+    pub high: i32, // e.g. 20.2°C stored as 202
+    pub low: i32,
+    pub running_state: RunningState,
 }
 
 impl Default for Model {

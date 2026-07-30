@@ -1,6 +1,8 @@
-// --- Event -> Message ---
+use crate::message::Message;
+use color_eyre::Result;
+use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind};
 
-fn handle_event() -> Result<Option<Message>> {
+pub fn handle_event() -> Result<Option<Message>> {
     if let Event::Key(key) = event::read()? {
         if key.kind != KeyEventKind::Press {
             return Ok(None);

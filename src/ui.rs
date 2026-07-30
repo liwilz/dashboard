@@ -1,20 +1,13 @@
-// --- Message ---
+use ratatui::{
+    Frame,
+    layout::Alignment,
+    text::{Line, Text},
+    widgets::{Block, Borders, Paragraph},
+};
 
-enum Message {
-    Quit,
-}
+use crate::model::Model;
 
-// --- Update ---
-
-fn update(model: &mut Model, msg: Message) {
-    match msg {
-        Message::Quit => model.running_state = RunningState::Done,
-    }
-}
-
-// --- View ---
-
-fn view(model: &Model, f: &mut Frame) {
+pub fn view(model: &Model, f: &mut Frame) {
     let block = Block::default().title("Weather").borders(Borders::ALL);
 
     let high = model.high as f32 / 10.0;
