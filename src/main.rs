@@ -22,15 +22,25 @@ mod message;
 mod model;
 mod ui;
 mod update;
+mod weather;
 
 fn main() -> Result<()> {
     color_eyre::install()?;
+
+    dotenvy::dotenv().ok();
+    let api_key = std::env::var("WEATHERAPI_KEY")?;
+    let data = weather::fetch_weather(&api_key, "Birmingham")?;
 
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
 
-    let mut model = Model::default();
+    let mut model = Model {
+        icon: data.icon,
+        high: data.high,
+        low: data.low,
+        running_state: RunningState::default(),
+    };
 
     while model.running_state != RunningState::Done {
         terminal.draw(|f| view(&model, f))?;
