@@ -5,11 +5,8 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
-use crate::{
-    action::Action,
-    components::{Component, weather::fetch::fetch_weather},
-};
-
+use crate::components::weather::fetch::fetch_weather;
+use crate::{action::Action, components::Component};
 mod fetch;
 
 pub enum WeatherIcon {
@@ -77,10 +74,10 @@ pub struct Weather {
 }
 
 impl Weather {
-    fn fetch(&mut self) -> color_eyre::Result<()> {
+    async fn fetch(&mut self) -> color_eyre::Result<()> {
         dotenvy::dotenv().ok();
         let api_key = std::env::var("WEATHERAPI_KEY")?;
-        let data = fetch_weather(&api_key, "Birmingham")?;
+        let data = fetch_weather(&api_key, "Birmingham").await?;
 
         self.icon = data.icon;
         self.high = data.high;
@@ -103,13 +100,6 @@ impl Component for Weather {
     fn handle_key_event(&mut self, key: KeyEvent) -> color_eyre::Result<Option<Action>> {
         if key.code == KeyCode::Char('r') {
             return Ok(Some(Action::WeatherRefresh));
-        }
-        Ok(None)
-    }
-
-    fn update(&mut self, action: Action) -> color_eyre::Result<Option<Action>> {
-        if let Action::WeatherRefresh = action {
-            self.fetch()?;
         }
         Ok(None)
     }

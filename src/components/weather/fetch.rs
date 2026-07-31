@@ -36,15 +36,17 @@ pub struct WeatherData {
     pub low: i32,
 }
 
-fn fetch_forecast(api_key: &str, location: &str) -> Result<ForecastResponse> {
+async fn fetch_forecast(api_key: &str, location: &str) -> Result<ForecastResponse> {
     let url =
         format!("https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={location}&days=1");
-    let response = reqwest::blocking::get(url)?.json::<ForecastResponse>()?;
-    Ok(response)
+    let client = reqwest::Client::new();
+    let response = client.get(url).send().await?;
+    let retval = response.json::<ForecastResponse>().await?;
+    Ok(retval)
 }
 
-pub fn fetch_weather(api_key: &str, location: &str) -> Result<WeatherData> {
-    let response = fetch_forecast(api_key, location)?;
+pub(crate) async fn fetch_weather(api_key: &str, location: &str) -> Result<WeatherData> {
+    let response = fetch_forecast(api_key, location).await?;
 
     let day = &response
         .forecast
