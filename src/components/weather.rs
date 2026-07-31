@@ -1,10 +1,14 @@
+use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     layout::Alignment,
     text::{Line, Text},
     widgets::{Block, Borders, Paragraph},
 };
 
-use crate::components::{Component, weather::fetch::fetch_weather};
+use crate::{
+    action::Action,
+    components::{Component, weather::fetch::fetch_weather},
+};
 
 mod fetch;
 
@@ -66,18 +70,10 @@ impl WeatherIcon {
     }
 }
 
-#[derive(Default, PartialEq, Eq)]
-pub enum RunningState {
-    #[default]
-    Running,
-    Done,
-}
-
 pub struct Weather {
     pub icon: WeatherIcon,
     pub high: i32, // e.g. 20.2°C stored as 202
     pub low: i32,
-    pub running_state: RunningState,
 }
 
 impl Weather {
@@ -99,12 +95,25 @@ impl Default for Weather {
             icon: WeatherIcon::Sunny,
             high: 290,
             low: 172,
-            running_state: RunningState::default(),
         }
     }
 }
 
 impl Component for Weather {
+    fn handle_key_event(&mut self, key: KeyEvent) -> color_eyre::Result<Option<Action>> {
+        if key.code == KeyCode::Char('r') {
+            return Ok(Some(Action::WeatherRefresh));
+        }
+        Ok(None)
+    }
+
+    fn update(&mut self, action: Action) -> color_eyre::Result<Option<Action>> {
+        if let Action::WeatherRefresh = action {
+            self.fetch()?;
+        }
+        Ok(None)
+    }
+
     fn draw(
         &mut self,
         frame: &mut ratatui::prelude::Frame,
