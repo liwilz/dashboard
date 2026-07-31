@@ -45,7 +45,7 @@ async fn fetch_forecast(api_key: &str, location: &str) -> Result<ForecastRespons
     Ok(retval)
 }
 
-pub(crate) async fn fetch_weather(api_key: &str, location: &str) -> Result<WeatherData> {
+pub async fn fetch_weather(api_key: &str, location: &str) -> Result<WeatherData> {
     let response = fetch_forecast(api_key, location).await?;
 
     let day = &response
