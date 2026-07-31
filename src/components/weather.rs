@@ -4,7 +4,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
-use crate::components::Component;
+use crate::components::{Component, weather::fetch::fetch_weather};
 
 mod fetch;
 
@@ -78,6 +78,19 @@ pub struct Weather {
     pub high: i32, // e.g. 20.2°C stored as 202
     pub low: i32,
     pub running_state: RunningState,
+}
+
+impl Weather {
+    fn fetch(&mut self) -> color_eyre::Result<()> {
+        dotenvy::dotenv().ok();
+        let api_key = std::env::var("WEATHERAPI_KEY")?;
+        let data = fetch_weather(&api_key, "Birmingham")?;
+
+        self.icon = data.icon;
+        self.high = data.high;
+        self.low = data.low;
+        Ok(())
+    }
 }
 
 impl Default for Weather {
